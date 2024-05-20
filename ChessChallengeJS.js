@@ -39,6 +39,9 @@ let DarkPieces = [[],[]]
 let WhitePieces = [[],[]]
 const MajorPieces = [null, 'R','N','B','Q','K','B','N','R']
 const letras = ['    A ', ' B ', ' C ', ' D ', ' E ', ' F ', ' G ', ' H ']
+let VisualBoard = `Chess|  A  |  B  |  C  |  D  |  E  |  F  |  G  |  H  |
+-----+-----------------------------------------------+
+`
 let ChessBoard = []
 
 let MoveCounter = 1
@@ -56,6 +59,21 @@ function GenerateChessBoard(){
     }
     ChessBoard[0][0] = ''
     ChessBoard[0].pop()
+
+    for(let i = 1; i < 8; i++){
+        VisualBoard += `  ${9 - i}  |     |     |     |     |     |     |     |     |
+-----|-----+-----+-----+-----+-----+-----+-----+-----|
+`
+    }
+    VisualBoard += `  1  |     |     |     |     |     |     |     |     |
+`
+    VisualBoard += `-----+-----------------------------------------------+ `
+    
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            VisualBoard = VisualBoard.replace('     ', ` ${i+1},${j+1} `)
+        }
+    }
 }
 GenerateChessBoard()
 
@@ -65,7 +83,7 @@ function ModifyChessBoard(){
             ChessBoard[i+1][j+1] = `[ ]`
             for(let k = 0; k < 8; k++){
                 if(DarkPieces[0][k + 1][0] === i+1 && DarkPieces[0][k + 1][1] === j+1){
-                    ChessBoard[i+1][j+1] = `[P]`
+                    ChessBoard[i+1][j+1] = `(P)`
                 }
                 else if(WhitePieces[0][k + 1][0] === i+1 && WhitePieces[0][k + 1][1] === j+1){
                     ChessBoard[i+1][j+1] = `[P]`
@@ -74,7 +92,7 @@ function ModifyChessBoard(){
                     ChessBoard[i+1][j+1] = `[${WhitePieces[1][k + 1][0]}]`
                 }
                 else if(DarkPieces[1][k + 1][1] === i+1 && DarkPieces[1][k + 1][2] === j+1){
-                    ChessBoard[i+1][j+1] = `[${DarkPieces[1][k + 1][0]}]`
+                    ChessBoard[i+1][j+1] = `(${DarkPieces[1][k + 1][0]})`
                 }
             }
         }
@@ -90,6 +108,12 @@ ${WhitePieces[0].join(' - ')}`)
     console.log(`
 ${DarkPieces[1].join(' - ')} 
 ${WhitePieces[1].join(' - ')}`)
+
+for(let i = 0; i < 8; i++){
+    for(let j = 0; j < 8; j++){
+        VisualBoard.replace(` ${i+1},${j+1} `, ` ${ChessBoard[i+1][j+1]} `)
+    }
+}
 }
 
 //definindo a posição inicial das peças
@@ -113,10 +137,10 @@ console.log()
 ModifyChessBoard()
 
 let lin = [0, 0], col = [0, 0]
+console.log(VisualBoard)
 
 
-
-let pieceMoved, isPawnMoved, isMoveACastling, invalidMove = false
+let pieceMoved, isPawnMoved, isMoveACastling, invalidMove = false, isAMajorPieceMoved
 
 console.log()
 
@@ -129,15 +153,28 @@ function Moves(){
     readline.question('Enter your Move: ', (Move) => {
         const isOdd = MoveCounter % 2 === 1
         for(let i = 0; i < 8; i++){
+            switch (Move[0]){
+                case 'O':
+                    isMoveACastling = true
+                    break
+                case letras[i].trim().toLowerCase():
+                    isPawnMoved = true;
+                    break
+                case MajorPieces[i]:
+                    isAMajorPieceMoved = true
+                    break
+                default:
+                    isMoveACastling = false
+                    isPawnMoved = false;
+                    isAMajorPieceMoved = false
+            }
+
             switch (Move.length){
                 //check
                 case 2:
-                    if(Move[0] === letras[i].trim().toLowerCase()){
-                        isPawnMoved = true;
+                    if(isPawnMoved){
                         lin[1] = (9 - Number(Move[1]))
                         col[1] = i+1;
-                        console.log(lin[1])      
-                        console.log(col[1])
                         for(let j = 0; j < 8; j++){
                             const isItAWhiteValidMove = (WhitePieces[0][j+1][1] === col[1]) && ((WhitePieces[0][j+1][0] - lin[1]) === 1 || ((WhitePieces[0][j+1][0] - lin[1]) === 2 && (WhitePieces[0][j+1][2] === 0))) && ChessBoard[WhitePieces[0][j+1][0] - 1][j+1] === `[ ]`                          
                             const isItADarkValidMove = (DarkPieces[0][j+1][1] === col[1]) && ((lin[1] - DarkPieces[0][j+1][0]) === 1 || ((lin[1] - DarkPieces[0][j+1][0]) === 2 && (DarkPieces[0][j+1][2] === 0))) && ChessBoard[DarkPieces[0][j+1][0] + 1][j+1] === `[ ]`
@@ -164,9 +201,41 @@ function Moves(){
                     }
                     break
                 case 3:
-
                     break
                 case 4:
+                    if(isPawnMoved){
+                        for(let j = 0; j < 8; j++){
+                                lin[1] = (9 - Number(Move[3]))
+                                col[1] = i+1;
+
+                                console.log()
+                                console.log(j +' -')
+                                console.log(col[1])
+                                console.log(DarkPieces[0][j+1][1])
+                                console.log(col[1])
+
+                                console.log()
+                                console.log(DarkPieces[0][j+1][0])
+                                console.log(lin[1] + 1)
+
+                            //*const isTheMoveADarkPawnCapture = Move[1] === 'x' && 
+
+                            /*
+                            +---+---+---+
+                            |(P)|   |(P)|  y - 1   y = WhitePieces[0][j+1][0]  (x, y) = [P]
+                            +---+---+---+          x = WhitePieces[0][j+1][1]
+                            |   |{P}|   |  y       
+                            +---+---+---+
+                             x-1  x  x+1
+                            */
+                            /**if(isTheMoveADarkPawnCapture){
+                                console.log(true)
+                            }
+                            else{
+                                console.log(false)
+                            }*/
+                        }
+                    }
                     break
                 case 5:
                     break
@@ -188,12 +257,8 @@ function Moves(){
 
         }
 
-        if(Move[0] === 'O'){
-            isMoveACastling = 'O'  
-        }
         ModifyChessBoard()
 
-        console.log(invalidMove)
         if(invalidMove === false){
             MoveCounter++
         }
@@ -214,6 +279,7 @@ function Moves(){
     })
 }
 Moves()
+console.log()
 
 
 
@@ -221,7 +287,7 @@ Moves()
 Lances Possíveis de peões:
     lances simples:
         - cl (2) - concluído
-        - cxcl (3)
+        - cxcl (4)
     Promoções:
         - cl=P (4)
         - cxcl=P (6)
@@ -264,15 +330,15 @@ Lances especiais com outra Notação:
 
     Notações com
         3:
-            5:
-                - cxcl
+            4:
                 - cl+
                 - cl#
                 - Pcl
                 - O-O
         4:
-            6:
+            7:
                 - cl=P
+                - cxcl
                 - Pxcl
                 - Pcl+
                 - Pcl#
