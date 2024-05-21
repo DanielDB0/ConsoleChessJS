@@ -39,8 +39,8 @@ let DarkPieces = [[],[]]
 let WhitePieces = [[],[]]
 const MajorPieces = [null, 'R','N','B','Q','K','B','N','R']
 const letras = ['    A ', ' B ', ' C ', ' D ', ' E ', ' F ', ' G ', ' H ']
-let VisualBoard = `Chess|  A  |  B  |  C  |  D  |  E  |  F  |  G  |  H  |
------+-----------------------------------------------+
+let VisualBoard = ` JS | A | B | C | D | E | F | G | H |
+----+-------------------------------+ 
 `
 let ChessBoard = []
 
@@ -61,19 +61,13 @@ function GenerateChessBoard(){
     ChessBoard[0].pop()
 
     for(let i = 1; i < 8; i++){
-        VisualBoard += `  ${9 - i}  |     |     |     |     |     |     |     |     |
------|-----+-----+-----+-----+-----+-----+-----+-----|
+        VisualBoard += ` ${9 - i}  |   |   |   |   |   |   |   |   |
+----|---+---+---+---+---+---+---+---|
 `
     }
-    VisualBoard += `  1  |     |     |     |     |     |     |     |     |
+    VisualBoard += ` 1  |   |   |   |   |   |   |   |   |
 `
-    VisualBoard += `-----+-----------------------------------------------+ `
-    
-    for(let i = 0; i < 8; i++){
-        for(let j = 0; j < 8; j++){
-            VisualBoard = VisualBoard.replace('     ', ` ${i+1},${j+1} `)
-        }
-    }
+    VisualBoard += `----+-------------------------------+ `
 }
 GenerateChessBoard()
 
@@ -97,10 +91,7 @@ function ModifyChessBoard(){
             }
         }
     }
-    for(let i = 0; i < 9; i++){
-        console.log(`${ChessBoard[i].join(' ')}
-        `)
-    }
+    
     console.log(`
 ${DarkPieces[0].join(' - ')} 
 ${WhitePieces[0].join(' - ')}`)
@@ -109,11 +100,18 @@ ${WhitePieces[0].join(' - ')}`)
 ${DarkPieces[1].join(' - ')} 
 ${WhitePieces[1].join(' - ')}`)
 
-for(let i = 0; i < 8; i++){
-    for(let j = 0; j < 8; j++){
-        VisualBoard.replace(` ${i+1},${j+1} `, ` ${ChessBoard[i+1][j+1]} `)
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            VisualBoard = VisualBoard.replace('   ', `${ChessBoard[i+1][j+1]}`)
+        }
     }
-}
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            VisualBoard = VisualBoard.replace('[ ]', `   `)
+        }
+    }
+    console.log()
+console.log(VisualBoard)
 }
 
 //definindo a posição inicial das peças
@@ -137,10 +135,9 @@ console.log()
 ModifyChessBoard()
 
 let lin = [0, 0], col = [0, 0]
-console.log(VisualBoard)
 
 
-let pieceMoved, isPawnMoved, isMoveACastling, invalidMove = false, isAMajorPieceMoved
+let pieceMoved, isPawnMoved, isMoveACastling, invalidMove = false, isAMajorPieceMoved, isTheMoveACapture
 
 console.log()
 
@@ -152,6 +149,9 @@ function Moves(){
 
     readline.question('Enter your Move: ', (Move) => {
         const isOdd = MoveCounter % 2 === 1
+        if(Move.includes('x') && Move.length > Move.indexOf('x') + 2){
+            isTheMoveACapture = true
+        }
         for(let i = 0; i < 8; i++){
             switch (Move[0]){
                 case 'O':
@@ -175,20 +175,20 @@ function Moves(){
                     if(isPawnMoved){
                         lin[1] = (9 - Number(Move[1]))
                         col[1] = i+1;
-                        for(let j = 0; j < 8; j++){
-                            const isItAWhiteValidMove = (WhitePieces[0][j+1][1] === col[1]) && ((WhitePieces[0][j+1][0] - lin[1]) === 1 || ((WhitePieces[0][j+1][0] - lin[1]) === 2 && (WhitePieces[0][j+1][2] === 0))) && ChessBoard[WhitePieces[0][j+1][0] - 1][j+1] === `[ ]`                          
-                            const isItADarkValidMove = (DarkPieces[0][j+1][1] === col[1]) && ((lin[1] - DarkPieces[0][j+1][0]) === 1 || ((lin[1] - DarkPieces[0][j+1][0]) === 2 && (DarkPieces[0][j+1][2] === 0))) && ChessBoard[DarkPieces[0][j+1][0] + 1][j+1] === `[ ]`
+
+                            const isItAWhiteValidMove = (WhitePieces[0][col[1]][1] === col[1]) && ((WhitePieces[0][col[1]][0] - lin[1]) === 1 || ((WhitePieces[0][col[1]][0] - lin[1]) === 2 && (WhitePieces[0][col[1]][2] === 0))) && ChessBoard[WhitePieces[0][col[1]][0] - 1][col[1]] === `[ ]`                          
+                            const isItADarkValidMove = (DarkPieces[0][col[1]][1] === col[1]) && ((lin[1] - DarkPieces[0][col[1]][0]) === 1 || ((lin[1] - DarkPieces[0][col[1]][0]) === 2 && (DarkPieces[0][col[1]][2] === 0))) && ChessBoard[DarkPieces[0][col[1]][0] + 1][col[1]] === `[ ]`
                             if(isOdd && isItAWhiteValidMove){
-                                WhitePieces[0][j+1][0] = lin[1]
-                                WhitePieces[0][j+1][2]++
+                                WhitePieces[0][col[1]][0] = lin[1]
+                                WhitePieces[0][col[1]][2]++
                                 invalidMove = false
                                 break
                                 
                             }
                             else{
                                 if(!isOdd && isItADarkValidMove){
-                                    DarkPieces[0][j+1][0] = lin[1]
-                                    DarkPieces[0][j+1][2]++
+                                    DarkPieces[0][col[1]][0] = lin[1]
+                                    DarkPieces[0][col[1]][2]++
                                     invalidMove = false
                                     break
                                 }
@@ -196,29 +196,57 @@ function Moves(){
                                     invalidMove = true
                                 }
                             }  
-                        }
                         break
                     }
                     break
                 case 3:
                     break
                 case 4:
-                    if(isPawnMoved){
+                    if(isPawnMoved && isTheMoveACapture){
                         for(let j = 0; j < 8; j++){
                                 lin[1] = (9 - Number(Move[3]))
-                                col[1] = i+1;
+                                for(k = 0; k < 8; k++){
+                                    if(Move[3] === letras[k].trim().toLowerCase()){
+                                        col[1] = k + 1
+                                        break
+                                    }
+                                }
+                                for(k = 0; k < 8; k++){
+                                    if(Move[0] === letras[k].trim().toLowerCase()){
+                                        col[0] = k + 1
+                                        break
+                                    }
+                                }
+                                console.log(col[0])
+                                console.log(col[1])
+
+
+                                console.log()
+                                console.log(lin[1] ===  DarkPieces[0][col[1]][0])
+
+                                console.log()
+                                console.log(WhitePieces[0][col[0]])
+                                //explicação do bug, tem dois peões na mesma coluna, então ele não identifica o peão que já captura desta forma
+                                console.log(lin[1] + 1 === WhitePieces[0][col[0]][0])
+
+                                console.log()
+                                console.log(WhitePieces[0][col[0]][1] === col[0])
 
                                 console.log()
                                 console.log(j +' -')
-                                console.log(col[1])
-                                console.log(DarkPieces[0][j+1][1])
-                                console.log(col[1])
 
-                                console.log()
-                                console.log(DarkPieces[0][j+1][0])
-                                console.log(lin[1] + 1)
 
-                            //*const isTheMoveADarkPawnCapture = Move[1] === 'x' && 
+                            const isTheMoveADarkPawnCapture = isOdd && (lin[1] ===  DarkPieces[0][col[1]][0] || lin[1] ===  DarkPieces[1][col[1]][0]) && (lin[1] + 1 === WhitePieces[0][col[0]][0] && WhitePieces[0][col[0]][1] === col[0])
+                            if(isTheMoveADarkPawnCapture){
+                                WhitePieces[0][col[0]][1] = col[1]
+                                WhitePieces[0][col[0]][0] = lin[1]
+                                if(lin[1] ===  DarkPieces[0][col[1]][0]){
+                                    DarkPieces[0][col[1]] = 0, 0, DarkPieces[0][col[1]][2]
+                                }
+                                else{
+                                    DarkPieces[1][col[1]] = DarkPieces[1][col[1]][0], 0, 0 
+                                }
+                            }
 
                             /*
                             +---+---+---+
@@ -257,6 +285,12 @@ function Moves(){
 
         }
 
+        for(let i = 0; i < 8; i++){
+            for(let j = 0; j < 8; j++){
+                VisualBoard = VisualBoard.replace(ChessBoard[i+1][j+1], '   ')
+            }
+        }
+
         ModifyChessBoard()
 
         if(invalidMove === false){
@@ -279,7 +313,6 @@ function Moves(){
     })
 }
 Moves()
-console.log()
 
 
 
@@ -368,3 +401,48 @@ Lances especiais com outra Notação:
             1:
               - cxcl=P# 
 */
+
+//Bispo:
+    /*     1     2     3     4     5     6     7     8
+        +-----------------------------------------------+
+    1   |  *  |     |     |     |     |     |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    2   |     |  *  |     |     |     |     |     |  *  |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    3   |     |     |  *  |     |     |     |  *  |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    4   |     |     |     |  *  |     |  *  |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    5   |     |     |     |     |  B  |     |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    6   |     |     |     |  *  |     |  *  |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    7   |     |     |  *  |     |     |     |  *  |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    8   |     |  *  |     |     |     |     |     |  *  |
+        +-----------------------------------------------+
+    *///B = [5][5]
+    //P1 = [5-x][5+x]; P2 = [5+x][5+x]; P3 = [5+x][5-x]; P4 = [5-x][5-x];
+
+//Cavalo:
+    /*     1     2     3     4     5     6     7     8
+        +-----------------------------------------------+
+    1   |     |     |     |     |     |     |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    2   |     |     |     |     |     |     |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    3   |     |     |     |  *  |     |  *  |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    4   |     |     |  *  |     |     |     |  *  |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    5   |     |     |     |     |  N  |     |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    6   |     |     |  *  |     |     |     |  *  |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    7   |     |     |     |  *  |     |  *  |     |     |
+        |-----+-----+-----+-----+-----+-----+-----+-----|
+    8   |     |     |     |     |     |     |     |     |
+        +-----------------------------------------------+
+    *///C = [x][y]
+    //P1 = [x+/-2][y+/-1]; P2 = [x+/-1][y+/-2]; 
+
