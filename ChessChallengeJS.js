@@ -168,122 +168,128 @@ function Moves(){
                     isPawnMoved = false;
                     isAMajorPieceMoved = false
             }
+            if(isMoveACastling || isPawnMoved || isAMajorPieceMoved)
+                break
+        }
 
-            switch (Move.length){
-                //check
-                case 2:
-                    if(isPawnMoved){
-                        lin[1] = (9 - Number(Move[1]))
-                        col[1] = i+1;
-
-                            const isItAWhiteValidMove = (WhitePieces[0][col[1]][1] === col[1]) && ((WhitePieces[0][col[1]][0] - lin[1]) === 1 || ((WhitePieces[0][col[1]][0] - lin[1]) === 2 && (WhitePieces[0][col[1]][2] === 0))) && ChessBoard[WhitePieces[0][col[1]][0] - 1][col[1]] === `[ ]`                          
-                            const isItADarkValidMove = (DarkPieces[0][col[1]][1] === col[1]) && ((lin[1] - DarkPieces[0][col[1]][0]) === 1 || ((lin[1] - DarkPieces[0][col[1]][0]) === 2 && (DarkPieces[0][col[1]][2] === 0))) && ChessBoard[DarkPieces[0][col[1]][0] + 1][col[1]] === `[ ]`
-                            if(isOdd && isItAWhiteValidMove){
-                                WhitePieces[0][col[1]][0] = lin[1]
-                                WhitePieces[0][col[1]][2]++
-                                invalidMove = false
-                                break
-                                
-                            }
-                            else{
-                                if(!isOdd && isItADarkValidMove){
-                                    DarkPieces[0][col[1]][0] = lin[1]
-                                    DarkPieces[0][col[1]][2]++
-                                    invalidMove = false
-                                    break
-                                }
-                                else{
-                                    invalidMove = true
-                                }
-                            }  
+        switch (Move.length){
+            //check
+            case 2:
+                if(isPawnMoved){
+                    lin[1] = (9 - Number(Move[1]))
+                for(let i = 0; i < 8; i++){
+                    if(Move[0] === letras[i].trim().toLowerCase()){
+                        col[1] = i+1; 
                         break
                     }
-                    break
-                case 3:
-                    break
-                case 4:
-                    if(isPawnMoved && isTheMoveACapture){
-                        for(let j = 0; j < 8; j++){
-                                lin[1] = (9 - Number(Move[3]))
-                                for(k = 0; k < 8; k++){
-                                    if(Move[3] === letras[k].trim().toLowerCase()){
-                                        col[1] = k + 1
-                                        break
-                                    }
-                                }
-                                for(k = 0; k < 8; k++){
-                                    if(Move[0] === letras[k].trim().toLowerCase()){
-                                        col[0] = k + 1
-                                        break
-                                    }
-                                }
-                                console.log(col[0])
-                                console.log(col[1])
-
-
-                                console.log()
-                                console.log(lin[1] ===  DarkPieces[0][col[1]][0])
-
-                                console.log()
-                                console.log(WhitePieces[0][col[0]])
-                                //explicação do bug, tem dois peões na mesma coluna, então ele não identifica o peão que já captura desta forma
-                                console.log(lin[1] + 1 === WhitePieces[0][col[0]][0])
-
-                                console.log()
-                                console.log(WhitePieces[0][col[0]][1] === col[0])
-
-                                console.log()
-                                console.log(j +' -')
-
-
-                            const isTheMoveADarkPawnCapture = isOdd && (lin[1] ===  DarkPieces[0][col[1]][0] || lin[1] ===  DarkPieces[1][col[1]][0]) && (lin[1] + 1 === WhitePieces[0][col[0]][0] && WhitePieces[0][col[0]][1] === col[0])
-                            if(isTheMoveADarkPawnCapture){
-                                WhitePieces[0][col[0]][1] = col[1]
-                                WhitePieces[0][col[0]][0] = lin[1]
-                                if(lin[1] ===  DarkPieces[0][col[1]][0]){
-                                    DarkPieces[0][col[1]] = 0, 0, DarkPieces[0][col[1]][2]
-                                }
-                                else{
-                                    DarkPieces[1][col[1]] = DarkPieces[1][col[1]][0], 0, 0 
-                                }
-                            }
-
-                            /*
-                            +---+---+---+
-                            |(P)|   |(P)|  y - 1   y = WhitePieces[0][j+1][0]  (x, y) = [P]
-                            +---+---+---+          x = WhitePieces[0][j+1][1]
-                            |   |{P}|   |  y       
-                            +---+---+---+
-                             x-1  x  x+1
-                            */
-                            /**if(isTheMoveADarkPawnCapture){
-                                console.log(true)
+                        
+                    }
+                        const isItAWhiteValidMove = (WhitePieces[0][col[1]][1] === col[1]) && ((WhitePieces[0][col[1]][0] - lin[1]) === 1 || ((WhitePieces[0][col[1]][0] - lin[1]) === 2 && (WhitePieces[0][col[1]][2] === 0))) && ChessBoard[WhitePieces[0][col[1]][0] - 1][col[1]] === `[ ]`                          
+                        const isItADarkValidMove = (DarkPieces[0][col[1]][1] === col[1]) && ((lin[1] - DarkPieces[0][col[1]][0]) === 1 || ((lin[1] - DarkPieces[0][col[1]][0]) === 2 && (DarkPieces[0][col[1]][2] === 0))) && ChessBoard[DarkPieces[0][col[1]][0] + 1][col[1]] === `[ ]`
+                        if(isOdd && isItAWhiteValidMove){
+                            WhitePieces[0][col[1]][0] = lin[1]
+                            WhitePieces[0][col[1]][2]++
+                            invalidMove = false
+                            break
+                            
+                        }
+                        else{
+                            if(!isOdd && isItADarkValidMove){
+                                DarkPieces[0][col[1]][0] = lin[1]
+                                DarkPieces[0][col[1]][2]++
+                                invalidMove = false
+                                break
                             }
                             else{
-                                console.log(false)
-                            }*/
+                                invalidMove = true
+                            }
+                        }  
+                    break
+                }
+                break
+            case 3:
+                break
+            case 4:
+                if(isPawnMoved && isTheMoveACapture){
+                    let P0 = [0,0]
+                    lin[1] = (9 - Number(Move[3]))
+                    if(isOdd){
+                        lin[0] = lin[1] + 1
+                    }
+                    else{
+                        lin[0] = lin[1] - 1
+                    }
+                    for(k = 0; k < 8; k++){
+                        if(Move[3] === letras[k].trim().toLowerCase()){
+                            col[1] = k + 1
+                            break
                         }
                     }
-                    break
-                case 5:
-                    break
-                case 6:
-                    break
-                case 7:
-                    break
-                default:
-                    invalidMove = true;
+                    for(k = 0; k < 8; k++){
+                        if(Move[0] === letras[k].trim().toLowerCase()){
+                            col[0] = k + 1
+                            break
+                        }
+                    }
+                    while(P0[0] < 8){
+                        if(isOdd){
+                            if(WhitePieces[0][P0[0]][0] === lin[0] && WhitePieces[0][P0[0]][1] === col[0]){
+                                break
+                            }
+                        }
+                        P0[0]++
+                    }
+                    console.log(col[0])
+                    console.log(col[1])
+                    console.log()
+                    console.log(lin[1] ===  DarkPieces[0][col[1]][0])
+                    console.log()
+                    console.log(WhitePieces[0][col[0]])
+                    //explicação do bug, tem dois peões na mesma coluna, então ele não identifica o peão que já captura desta forma
+                    console.log(lin[1] + 1 === WhitePieces[0][P0[0]][0])
+                    console.log()
+                    console.log(WhitePieces[0][P0[0]][1] === col[0])
+                    console.log()
+                    const isTheMoveADarkPawnCapture = isOdd && (lin[1] ===  DarkPieces[0][col[1]][0] || lin[1] ===  DarkPieces[1][col[1]][0]) && (lin[1] + 1 === WhitePieces[0][P0[0]][0] && WhitePieces[0][P0[0]][1] === col[0])
+                    if(isTheMoveADarkPawnCapture){
+                        WhitePieces[0][P0[0]][1] = col[1]
+                        WhitePieces[0][P0[0]][0] = lin[1]
+                        if(lin[1] ===  DarkPieces[0][col[1]][0]){
+                            DarkPieces[0][col[1]] = 0, 0, DarkPieces[0][col[1]][2]
+                        }
+                        else{
+                            DarkPieces[1][col[1]] = DarkPieces[1][col[1]][0], 0, 0 
+                        }
+                    }
+                        /*
+                        +---+---+---+
+                        |(P)|   |(P)|  y - 1   y = WhitePieces[0][j+1][0]  (x, y) = [P]
+                        +---+---+---+          x = WhitePieces[0][j+1][1]
+                        |   |{P}|   |  y       
+                        +---+---+---+
+                         x-1  x  x+1
+                        */
+                        /**if(isTheMoveADarkPawnCapture){
+                            console.log(true)
+                        }
+                        else{
+                            console.log(false)
+                        }*/
+                    
+                }
+                break
+            case 5:
+                break
+            case 6:
+                break
+            case 7:
+                break
+            default:
+                invalidMove = true;
                     
 
-            }
-
-            if(Move[0] === MajorPieces[i+1]){
-                pieceMoved = Move[Move.indexOf(MajorPieces[i+1])]
-                console.log(pieceMoved)
-                break
-            }
-
         }
+        
 
         for(let i = 0; i < 8; i++){
             for(let j = 0; j < 8; j++){
